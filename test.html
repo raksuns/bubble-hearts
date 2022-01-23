@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="format-detection" content="telephone=no,address=no,email=no">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <title> Bubble Hearts </title>
+    <script src="./bubble-hearts.min.js" charset="utf-8"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/es6-promise/4.0.5/es6-promise.js" charset="utf-8"></script>
+    <style media="screen">
+        canvas {
+            display: block;
+            cursor: pointer;
+            margin: 30px auto 0;
+            -webkit-tap-highlight-color: rgba(0,0,0,0);
+        }
+        button {
+            display: block;
+            position: absolute;
+            left: calc(50vw - 15px);
+            margin: -30px auto;
+            z-index: 1;
+            appearance: none;
+            border: none;
+            width: 30px;
+            height: 30px;
+            background: transparent;
+        }
+    </style>
+</head>
+<body>
+    <button id="btnHeart">❤️</button>
+    <script type="text/javascript">
+        // Images resource
+        var assets = [
+            'https://www.fashionseoul.com/wp-content/uploads/2016/04/20160426_J-2.jpg',
+            'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTAubcI0TcUzjT9K8s7gcoAnVUNcWipxEu8o_LFwQTgMSxI61hYIJk_p_wigRxsXqttkkc&usqp=CAU',
+            'http://zine.istyle24.com/FileUpload/WebEdit/636221620293943750.jpg',
+        ];
+        assets.forEach(function ( src, index ) {
+            assets[index] = new Promise(function ( resolve ) {
+                var img = new Image;
+                img.onload = resolve.bind(null, img);
+                img.height=30;
+                img.width=30;
+                img.src = src;
+            });
+        });
+
+        // Images preload
+        Promise.all(assets).then(function ( images ) {
+
+            var random = {
+                uniform : function ( min, max ) {
+                    return min + (max - min) * Math.random();
+                },
+                uniformDiscrete : function ( i, j ) {
+                    return i + Math.floor((j - i + 1) * random.uniform(0, 1));
+                },
+            };
+
+            // Init stage
+            var stage = new BubbleHearts();
+            var canvas = stage.canvas;
+            canvas.width = 100;
+            canvas.height = 300;
+            canvas.style['width'] = '100px';
+            canvas.style['height'] = '300px';
+
+            const btnHeartEl = document.getElementById('btnHeart')
+
+            btnHeartEl.insertAdjacentElement('beforebegin', canvas);
+
+            // setInterval(() => {
+            //     stage.bubble(images[random.uniformDiscrete(0, images.length - 1)]);
+            // }, 700)
+
+            // Bubble animation as custom
+            btnHeartEl.addEventListener('click', function () {
+                stage.bubble(images[random.uniformDiscrete(0, images.length - 1)]);
+            }, false);
+        });
+    </script>
+</body>
+</html>
